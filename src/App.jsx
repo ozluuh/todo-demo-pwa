@@ -1,22 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
+import { index, store, clear } from "./api/database";
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [value, setValue] = useState("");
 
+  useEffect(() => {
+    const dbTasks = index();
+
+    setTasks(dbTasks);
+  }, []);
+
   const addTask = () => {
     const inputValue = value.trim();
 
-    if (!inputValue.length > 0) {
-      return;
-    }
+    if (!inputValue.length > 0) return;
 
-    setTasks((prev) => [
-      ...prev,
-      { _id: uuid(), title: inputValue, active: true },
-    ]);
-    setValue("");
+    setTasks((prev) => {
+      const response = [
+        ...prev,
+        { _id: uuid(), title: inputValue, active: true },
+      ];
+
+      setValue("");
+      store(response);
+
+      return response;
+    });
 
     if (process.env.NODE_ENV === "development") console.log(tasks);
   };
@@ -26,7 +37,10 @@ function App() {
     task.active = false;
 
     const currentTasks = tasks.filter((p) => p._id !== taskId);
-    setTasks([...currentTasks, task]);
+    const response = [...currentTasks, task];
+
+    setTasks(response);
+    store(response);
 
     if (process.env.NODE_ENV === "development") console.log(tasks);
   };
@@ -35,7 +49,14 @@ function App() {
     const currentTasks = tasks.filter((p) => p._id !== taskId);
     setTasks(currentTasks);
 
+    store(currentTasks);
+
     if (process.env.NODE_ENV === "development") console.log(tasks);
+  };
+
+  const clearTasks = () => {
+    setTasks([]);
+    clear();
   };
 
   return (
@@ -64,16 +85,29 @@ function App() {
               onChange={(e) => setValue(e.target.value)}
             />
 
-            <button
-              className="absolute p-2 text-white -translate-y-1/2 bg-slate-900 rounded-full top-1/2 right-4"
-              type="button"
-              onClick={addTask}
-            >
-              <span className="hidden md:inline-block">Add</span>
-              <i className="w-2 h-2 p-2" style={{ fontStyle: "normal" }}>
-                &#43;
-              </i>
-            </button>
+            <div className="absolute top-1/2 right-4 -translate-y-1/2 inline-flex">
+              <button
+                className="p-2 text-white bg-slate-900 rounded-l"
+                type="button"
+                onClick={addTask}
+              >
+                <span className="hidden md:inline-block">Add</span>
+                <i className="w-2 h-2 p-2" style={{ fontStyle: "normal" }}>
+                  &#43;
+                </i>
+              </button>
+
+              <button
+                className="p-2 text-white bg-rose-600 rounded-r"
+                type="button"
+                onClick={clearTasks}
+              >
+                <span className="hidden md:inline-block">Clear</span>
+                <i className="w-2 h-2 p-2" style={{ fontStyle: "normal" }}>
+                  &#215;
+                </i>
+              </button>
+            </div>
           </div>
 
           {/* Tasks */}
