@@ -12,8 +12,30 @@ function App() {
       return;
     }
 
-    setTasks((prev) => [...prev, inputValue]);
+    setTasks((prev) => [
+      ...prev,
+      { _id: uuid(), title: inputValue, active: true },
+    ]);
     setValue("");
+
+    if (process.env.NODE_ENV === "development") console.log(tasks);
+  };
+
+  const completeTask = (taskId) => {
+    const task = tasks.find((p) => p._id === taskId);
+    task.active = false;
+
+    const currentTasks = tasks.filter((p) => p._id !== taskId);
+    setTasks([...currentTasks, task]);
+
+    if (process.env.NODE_ENV === "development") console.log(tasks);
+  };
+
+  const excludeTask = (taskId) => {
+    const currentTasks = tasks.filter((p) => p._id !== taskId);
+    setTasks(currentTasks);
+
+    if (process.env.NODE_ENV === "development") console.log(tasks);
   };
 
   return (
@@ -56,60 +78,66 @@ function App() {
 
           {/* Tasks */}
           <section className="tasks flex flex-wrap gap-2 justify-center">
-            {tasks.map((task) => (
-              <div
-                key={uuid()}
-                className="task flex-1 basis-full max-w-lg p-6 bg-white rounded-xl shadow-md flex items-center space-x-4 justify-between"
-              >
-                <div>
-                  <div className="text-xl font-medium text-black">{task}</div>
-                </div>
-                <div className="inline-flex gap-x-4">
-                  {/* Complete Task Button */}
-                  <button
-                    className={`flex items-center justify-between px-5 py-3 transition-colors border border-current rounded-lg group focus:outline-none focus:ring text-emerald-600 hover:bg-emerald-600`}
-                  >
-                    <span
-                      className={
-                        "font-medium transition-colors group-hover:text-white hidden md:block"
-                      }
+            {tasks
+              .filter((p) => p.active === true)
+              .map((task) => (
+                <div
+                  key={task._id}
+                  className="task flex-1 basis-full max-w-lg p-6 bg-white rounded-xl shadow-md flex items-center space-x-4 justify-between"
+                >
+                  <div>
+                    <div className="text-xl font-medium text-black">
+                      {task.title}
+                    </div>
+                  </div>
+                  <div className="inline-flex gap-x-4">
+                    {/* Complete Task Button */}
+                    <button
+                      className={`flex items-center justify-between px-5 py-3 transition-colors border border-current rounded-lg group focus:outline-none focus:ring text-emerald-600 hover:bg-emerald-600`}
+                      onClick={() => completeTask(task._id)}
                     >
-                      Complete
-                    </span>
-
-                    <span className="flex-shrink-0 bg-white rounded md:p-2 md:ml-4">
-                      <i
-                        className="w-2 h-2 p-1"
-                        style={{ fontStyle: "normal" }}
+                      <span
+                        className={
+                          "font-medium transition-colors group-hover:text-white hidden md:block"
+                        }
                       >
-                        &#10003;
-                      </i>
-                    </span>
-                  </button>
-                  {/* Exclude Task Button */}
-                  <button
-                    className={`flex items-center justify-between px-5 py-3 transition-colors border border-current rounded-lg group focus:outline-none focus:ring text-rose-600 hover:bg-rose-600`}
-                  >
-                    <span
-                      className={
-                        "font-medium transition-colors group-hover:text-white hidden md:block"
-                      }
+                        Complete
+                      </span>
+
+                      <span className="flex-shrink-0 bg-white rounded md:p-2 md:ml-4">
+                        <i
+                          className="w-2 h-2 p-1"
+                          style={{ fontStyle: "normal" }}
+                        >
+                          &#10003;
+                        </i>
+                      </span>
+                    </button>
+                    {/* Exclude Task Button */}
+                    <button
+                      className={`flex items-center justify-between px-5 py-3 transition-colors border border-current rounded-lg group focus:outline-none focus:ring text-rose-600 hover:bg-rose-600`}
+                      onClick={() => excludeTask(task._id)}
                     >
-                      Exclude
-                    </span>
-
-                    <span className="flex-shrink-0 bg-white rounded md:p-2 md:ml-4">
-                      <i
-                        className="w-2 h-2 p-1"
-                        style={{ fontStyle: "normal" }}
+                      <span
+                        className={
+                          "font-medium transition-colors group-hover:text-white hidden md:block"
+                        }
                       >
-                        &#10005;
-                      </i>
-                    </span>
-                  </button>
+                        Exclude
+                      </span>
+
+                      <span className="flex-shrink-0 bg-white rounded md:p-2 md:ml-4">
+                        <i
+                          className="w-2 h-2 p-1"
+                          style={{ fontStyle: "normal" }}
+                        >
+                          &#10005;
+                        </i>
+                      </span>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </section>
         </main>
         {/* Footer */}
