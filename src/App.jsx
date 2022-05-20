@@ -1,16 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
 import { v4 as uuid } from "uuid";
-import { index, store, clear } from "./api/database";
+import { index, store, clear, item } from "./api/database";
+import { TASKS_KEY, LAST_UPDATE_KEY } from "./utils/keys";
+import { versionReleaseDateTime } from "./utils/metadata";
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [value, setValue] = useState("");
 
   useEffect(() => {
-    const dbTasks = index();
+    const dbTasks = index(TASKS_KEY);
 
     setTasks(dbTasks);
+
+    const hasLastUpdateDate = item(LAST_UPDATE_KEY);
+
+    if (hasLastUpdateDate === null) {
+      const currentUTCTimestamp = new Date(versionReleaseDateTime).getTime();
+      store({ key: LAST_UPDATE_KEY, data: currentUTCTimestamp });
+      return;
+    }
+
+    const clientLastUpdateTimestamp = parseInt(hasLastUpdateDate);
+
+    const appLastUpdateTimestamp = new Date(versionReleaseDateTime).getTime();
+
+    if (appLastUpdateTimestamp > clientLastUpdateTimestamp) {
+      store({ key: LAST_UPDATE_KEY, data: appLastUpdateTimestamp });
+      window.location.reload();
+    }
   }, []);
 
   const addTask = () => {
@@ -25,7 +44,7 @@ function App() {
       ];
 
       setValue("");
-      store(response);
+      store({ key: TASKS_KEY, data: response });
 
       return response;
     });
@@ -41,7 +60,7 @@ function App() {
     const response = [...currentTasks, task];
 
     setTasks(response);
-    store(response);
+    store({ key: TASKS_KEY, data: response });
 
     if (process.env.NODE_ENV === "development") console.log(tasks);
   };
@@ -50,14 +69,14 @@ function App() {
     const currentTasks = tasks.filter((p) => p._id !== taskId);
     setTasks(currentTasks);
 
-    store(currentTasks);
+    store({ key: TASKS_KEY, data: currentTasks });
 
     if (process.env.NODE_ENV === "development") console.log(tasks);
   };
 
   const clearTasks = () => {
     setTasks([]);
-    clear();
+    clear(TASKS_KEY);
   };
 
   return (
@@ -178,11 +197,11 @@ function App() {
         {/* Footer */}
         <footer className="p-8 flex flex-col items-center justify-center">
           <p>&copy; 2022 - Demo PWA</p>
-          <p className="flex gap-x-1">
-            Made specially to your
-            <BrowserView>&#x1F4BB; Desktop</BrowserView>
-            <MobileView>&#x1F4F1; Mobile</MobileView>
-            Device
+          <p>
+            Made specially to your &nbsp;
+            <BrowserView renderWithFragment>&#x1F4BB; Desktop</BrowserView>
+            <MobileView renderWithFragment>&#x1F4F1; Mobile</MobileView>
+            &nbsp;Device
           </p>
         </footer>
       </div>

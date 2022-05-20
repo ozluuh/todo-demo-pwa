@@ -1,17 +1,23 @@
-const TASKS_KEY = "tasks";
-
-export const store = (data) => {
-  localStorage.setItem(TASKS_KEY, JSON.stringify(data));
+export const store = ({ key, data }) => {
+  localStorage.setItem(key, JSON.stringify(data));
 };
 
-export const index = () => {
-  const response = localStorage.getItem(TASKS_KEY);
+export const index = (key) => {
+  const response = localStorage.getItem(key);
 
   if (response === null) return [];
 
   return JSON.parse(response);
 };
 
-export const clear = () => {
-  localStorage.removeItem(TASKS_KEY);
+export const clear = (key) => {
+  localStorage.removeItem(key);
+};
+
+export const item = (key) => {
+  const response = localStorage.getItem(key);
+
+  if (response === null) return null;
+
+  return response;
 };
