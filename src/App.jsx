@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { BrowserView, MobileView } from "react-device-detect";
 import { v4 as uuid } from "uuid";
 import { index, store, clear } from "./api/database";
 
@@ -65,7 +66,7 @@ function App() {
       <header className="p-4 bg-slate-900 text-slate-200 mb-6">
         <div className="flex justify-center flex-col items-center">
           <h1>
-            ToDo <span className="hidden md:inline-block">Web</span>App
+            ToDo <BrowserView renderWithFragment>Web</BrowserView>App
           </h1>
           <p className="hidden md:block">A personal ToDo</p>
         </div>
@@ -175,8 +176,14 @@ function App() {
           </section>
         </main>
         {/* Footer */}
-        <footer className="p-8 flex justify-center">
+        <footer className="p-8 flex flex-col items-center justify-center">
           <p>&copy; 2022 - Demo PWA</p>
+          <p className="flex gap-x-1">
+            Made specially to your
+            <BrowserView>&#x1F4BB; Desktop</BrowserView>
+            <MobileView>&#x1F4F1; Mobile</MobileView>
+            Device
+          </p>
         </footer>
       </div>
     </div>
