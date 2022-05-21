@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
 import { v4 as uuid } from "uuid";
 import { clear, index, item, store } from "./api/database";
+import Button from "./components/Button";
 import { LAST_UPDATE_KEY, TASKS_KEY } from "./utils/keys";
 import { version, versionReleaseDateTime } from "./utils/metadata";
 
-function App() {
+export default function App() {
   const [tasks, setTasks] = useState([]);
   const [value, setValue] = useState("");
 
@@ -139,56 +140,25 @@ function App() {
                   key={task._id}
                   className="task flex-1 basis-full max-w-lg p-6 bg-white rounded-xl shadow-md flex items-center space-x-4 justify-between"
                 >
-                  <div>
-                    <div className="text-xl font-medium text-black">
+                  <div className="justify-between sm:flex items-center">
+                    <p className="text-xl font-bold text-gray-900 ml-2">
                       {task.title}
-                    </div>
+                    </p>
                   </div>
-                  <div className="inline-flex gap-x-4">
-                    {/* Complete Task Button */}
-                    <button
-                      className={`flex items-center justify-between px-5 py-3 transition-colors border border-current rounded-lg group focus:outline-none focus:ring text-emerald-600 hover:bg-emerald-600`}
+
+                  <div className="inline-flex gap-x-2 lg:gap-x-4">
+                    <Button
+                      color="success"
+                      text="Complete"
+                      icon="&#10003;"
                       onClick={() => completeTask(task._id)}
-                    >
-                      <span
-                        className={
-                          "font-medium transition-colors group-hover:text-white hidden md:block"
-                        }
-                      >
-                        Complete
-                      </span>
-
-                      <span className="flex-shrink-0 bg-white rounded md:p-2 md:ml-4">
-                        <i
-                          className="w-2 h-2 p-1"
-                          style={{ fontStyle: "normal" }}
-                        >
-                          &#10003;
-                        </i>
-                      </span>
-                    </button>
-                    {/* Exclude Task Button */}
-                    <button
-                      className={`flex items-center justify-between px-5 py-3 transition-colors border border-current rounded-lg group focus:outline-none focus:ring text-rose-600 hover:bg-rose-600`}
+                    />
+                    <Button
+                      color="danger"
+                      text="Exclude"
+                      icon="&#10005;"
                       onClick={() => excludeTask(task._id)}
-                    >
-                      <span
-                        className={
-                          "font-medium transition-colors group-hover:text-white hidden md:block"
-                        }
-                      >
-                        Exclude
-                      </span>
-
-                      <span className="flex-shrink-0 bg-white rounded md:p-2 md:ml-4">
-                        <i
-                          className="w-2 h-2 p-1"
-                          style={{ fontStyle: "normal" }}
-                        >
-                          &#10005;
-                        </i>
-                      </span>
-                    </button>
+                    />
                   </div>
                 </div>
               ))}
@@ -198,7 +168,7 @@ function App() {
         <footer className="p-4 flex flex-col items-center justify-center">
           <p>&copy; 2022 - Demo PWA</p>
           <p>
-            Made specially to your &nbsp;
+            Made specially to your&nbsp;
             <BrowserView renderWithFragment>&#x1F4BB; Desktop</BrowserView>
             <MobileView renderWithFragment>&#x1F4F1; Mobile</MobileView>
             &nbsp;Device
@@ -209,5 +179,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
