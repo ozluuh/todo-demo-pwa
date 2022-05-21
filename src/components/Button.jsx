@@ -13,15 +13,13 @@ export default function Button({
       onClick={onClick}
     >
       <span
-        className={`font-medium transition-colors group-hover:text-white ${
-          icon ? "hidden lg:block" : ""
-        }`}
+        className={`font-medium transition-colors group-hover:text-white`}
       >
         {text}
       </span>
 
       {icon.length > 0 && (
-        <span className="flex-shrink-0 rounded lg:p-2 lg:ml-2 group-hover:text-white lg:bg-white group-hover:lg:text-current">
+        <span className="flex-shrink-0 rounded group-hover:text-white sm:bg-white group-hover:sm:text-current">
           <i className="w-1 h-1 p-1" style={{ fontStyle: "normal" }}>
             {icon}
           </i>

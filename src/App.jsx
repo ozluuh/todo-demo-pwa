@@ -2,18 +2,21 @@ import React, { useEffect, useState } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
 import { v4 as uuid } from "uuid";
 import { clear, index, item, store } from "./api/database";
-import Button from "./components/Button";
+import TaskItem from "./components/TaskItem";
 import { LAST_UPDATE_KEY, TASKS_KEY } from "./utils/keys";
 import { version, versionReleaseDateTime } from "./utils/metadata";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
   const [value, setValue] = useState("");
+  const [hasTasks, setHasTasks] = useState(false);
 
   useEffect(() => {
     const dbTasks = index(TASKS_KEY);
 
     setTasks(dbTasks);
+
+    setHasTasks(dbTasks.length > 0);
 
     const hasLastUpdateDate = item(LAST_UPDATE_KEY);
 
@@ -33,6 +36,10 @@ export default function App() {
     }
   }, []);
 
+  useEffect(() => {
+    setHasTasks(tasks.length > 0);
+  }, [tasks]);
+
   const addTask = () => {
     const inputValue = value.trim();
 
@@ -41,7 +48,13 @@ export default function App() {
     setTasks((prev) => {
       const response = [
         ...prev,
-        { _id: uuid(), title: inputValue, active: true },
+        {
+          _id: uuid(),
+          title: inputValue,
+          active: true,
+          createdAt: new Date().toLocaleDateString(),
+          image: "",
+        },
       ];
 
       setValue("");
@@ -80,6 +93,22 @@ export default function App() {
     clear(TASKS_KEY);
   };
 
+  const WhenEmptyTasks = () => {
+    return (
+      <div className="text-center">
+        <img
+          src="https://www.hyperui.dev/photos/confused-travolta.gif"
+          alt="John Travolta confused"
+          className="object-cover w-full h-64 rounded-lg"
+        />
+
+        <p className="mt-6 text-gray-500">
+          We can't find any task, try adding new one.
+        </p>
+      </div>
+    );
+  };
+
   return (
     <div className="App h-full flex flex-col">
       {/* Header */}
@@ -88,7 +117,7 @@ export default function App() {
           <h1>
             ToDo <BrowserView renderWithFragment>Web</BrowserView>App
           </h1>
-          <p className="hidden md:block">A personal ToDo</p>
+          <p className="hidden md:block">Your personal ToDo</p>
         </div>
       </header>
 
@@ -132,36 +161,21 @@ export default function App() {
           </div>
 
           {/* Tasks */}
-          <section className="tasks flex flex-wrap gap-2 justify-center">
-            {tasks
-              .filter((p) => p.active === true)
-              .map((task) => (
-                <div
-                  key={task._id}
-                  className="task flex-1 basis-full max-w-lg p-6 bg-white rounded-xl shadow-md flex items-center space-x-4 justify-between"
-                >
-                  <div className="justify-between sm:flex items-center">
-                    <p className="text-xl font-bold text-gray-900 ml-2">
-                      {task.title}
-                    </p>
-                  </div>
+          <section className="tasks flex flex-wrap gap-4 justify-center">
+            {!hasTasks && <WhenEmptyTasks />}
 
-                  <div className="inline-flex gap-x-2 lg:gap-x-4">
-                    <Button
-                      color="success"
-                      text="Complete"
-                      icon="&#10003;"
-                      onClick={() => completeTask(task._id)}
-                    />
-                    <Button
-                      color="danger"
-                      text="Exclude"
-                      icon="&#10005;"
-                      onClick={() => excludeTask(task._id)}
-                    />
-                  </div>
-                </div>
-              ))}
+            {hasTasks &&
+              tasks
+                .filter((p) => p.active === true)
+                .map((task) => (
+                  // Task card
+                  <TaskItem
+                    key={task._id}
+                    task={task}
+                    onSuccess={() => completeTask(task._id)}
+                    onFailure={() => excludeTask(task._id)}
+                  />
+                ))}
           </section>
         </main>
         {/* Footer */}
