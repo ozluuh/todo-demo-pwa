@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
 import { v4 as uuid } from "uuid";
-import { index, store, clear, item } from "./api/database";
-import { TASKS_KEY, LAST_UPDATE_KEY } from "./utils/keys";
-import { versionReleaseDateTime } from "./utils/metadata";
+import { clear, index, item, store } from "./api/database";
+import { LAST_UPDATE_KEY, TASKS_KEY } from "./utils/keys";
+import { version, versionReleaseDateTime } from "./utils/metadata";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -195,7 +195,7 @@ function App() {
           </section>
         </main>
         {/* Footer */}
-        <footer className="p-8 flex flex-col items-center justify-center">
+        <footer className="p-4 flex flex-col items-center justify-center">
           <p>&copy; 2022 - Demo PWA</p>
           <p>
             Made specially to your &nbsp;
@@ -203,6 +203,7 @@ function App() {
             <MobileView renderWithFragment>&#x1F4F1; Mobile</MobileView>
             &nbsp;Device
           </p>
+          <p>Build Version: v{version}</p>
         </footer>
       </div>
     </div>
