@@ -32,7 +32,7 @@ export default function App() {
 
     if (appLastUpdateTimestamp > clientLastUpdateTimestamp) {
       store({ key: LAST_UPDATE_KEY, data: appLastUpdateTimestamp });
-      window.location.reload();
+      window.location.reload(true);
     }
   }, []);
 
@@ -53,7 +53,6 @@ export default function App() {
           title: inputValue,
           active: true,
           createdAt: new Date().toLocaleDateString(),
-          image: "",
         },
       ];
 
@@ -107,6 +106,17 @@ export default function App() {
         </p>
       </div>
     );
+  };
+
+  const setNewImageToTask = (task) => {
+    const indexOfCurrentTask = tasks.findIndex((item) => item._id === task._id);
+
+    setTasks((prev) => {
+      prev[indexOfCurrentTask] = task;
+      store({ key: TASKS_KEY, data: prev });
+
+      return [...prev];
+    });
   };
 
   return (
@@ -174,6 +184,7 @@ export default function App() {
                     task={task}
                     onSuccess={() => completeTask(task._id)}
                     onFailure={() => excludeTask(task._id)}
+                    onChangeImage={setNewImageToTask}
                   />
                 ))}
           </section>
