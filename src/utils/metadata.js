@@ -1,4 +1,4 @@
 module.exports = {
-  version: "0.1.0-beta",
-  versionReleaseDateTime: "2022-05-20T21:15-0300",
+  version: "1.0.0-beta",
+  versionReleaseDateTime: "2022-05-21T19:34-0300",
 };
